@@ -15,7 +15,7 @@ docker push 959764943449.dkr.ecr.us-east-1.amazonaws.com/my-hello-image:latest
 # create the new revision of the task defination 
 # for more arguments 
 # https://docs.aws.amazon.com/cli/latest/reference/ecs/register-task-definition.html
-aws ecs register-task-definition --cli-input-json file://container.json
+aws ecs register-task-definition --cli-input-json file://task_definition.json
 
 # update the service 
 # for more arguents
