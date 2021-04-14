@@ -1,23 +1,25 @@
 #!/bin/bash
 
+image_name="hello_world:latest"
+repo_name="hello-image"
+
 # build docker image
-docker build --no-cache -t my-hello-image .
+docker build --no-cache -t $image_name .
 
 # Retrieve an authentication token and authenticate your Docker client to your registry
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 959764943449.dkr.ecr.us-east-1.amazonaws.com
+aws ecr get-login-password --region <region> | docker login --username AWS --password-stdin <aws-account-number>.dkr.ecr.<region>.amazonaws.com
+
+# Create the Repository to push the image
+aws ecr create-repository --repository-name $repo_name
 
 # Tag image so you can push the image to this repository
-docker tag my-hello-image:latest 959764943449.dkr.ecr.us-east-1.amazonaws.com/my-hello-image:latest
+docker tag $image_name <aws-account-number>.dkr.ecr.<region>.amazonaws.com/$repo_name
 
 # Push the image to ECR 
-docker push 959764943449.dkr.ecr.us-east-1.amazonaws.com/my-hello-image:latest
+docker push <aws-account-number>.dkr.ecr.<region>.amazonaws.com/$image_name
 
 # create the new revision of the task defination 
-# for more arguments 
-# https://docs.aws.amazon.com/cli/latest/reference/ecs/register-task-definition.html
-aws ecs register-task-definition --cli-input-json file://task_definition.json
+ecs deploy cluster-name service-name --no-deregister --image container-name image-name --tag tag-name
 
 # update the service 
-# for more arguents
-# https://docs.aws.amazon.com/cli/latest/reference/ecs/update-service.html
-aws ecs update-service --cluster hello-image --service hello-service --task-definition hello-image --desired-count 4
+ecs scale cluster-name service-name count
